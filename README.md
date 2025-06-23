@@ -1,4 +1,4 @@
-# Magalu Fretes - API e Dashboard de Teste
+# API e Dashboard de Teste
 
 API robusta para cálculo de frete e rastreamento de pedidos, pronta para integração com a plataforma.
 
