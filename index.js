@@ -9,6 +9,7 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const helmet = require('helmet');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
+const axios = require('axios');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -146,7 +147,9 @@ router.post('/frete/calcular', async (req, res, next) => {
 router.post('/rastreamento', async (req, res, next) => {
   try {
     await rastreamentoSchema.validateAsync(req.body);
-    const { pedido_id, status } = req.body;
+    const { status } = req.body;
+    // Gera um pedido_id aleatório único
+    const pedido_id = 'PED' + uuidv4().replace(/-/g, '').substr(0, 9).toUpperCase();
     const codigo = 'MAG' + uuidv4().replace(/-/g, '').substr(0, 9).toUpperCase();
     db.run(
       'INSERT INTO rastreamentos (codigo, pedido_id, status) VALUES (?, ?, ?)',
@@ -256,6 +259,76 @@ router.patch('/rastreamento/:codigo', async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /rastreamento/{codigo}:
+ *   delete:
+ *     summary: Exclui um rastreamento/pedido
+ *     parameters:
+ *       - in: path
+ *         name: codigo
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Pedido excluído
+ */
+router.delete('/rastreamento/:codigo', autenticaAdmin, (req, res) => {
+  const { codigo } = req.params;
+  db.run('DELETE FROM rastreamentos WHERE codigo = ?', [codigo], function(err) {
+    if (err) {
+      return res.status(500).json({ sucesso: false, erro: 'Erro ao excluir pedido' });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ sucesso: false, erro: 'Pedido não encontrado' });
+    }
+    res.json({ sucesso: true, mensagem: 'Pedido excluído com sucesso' });
+  });
+});
+
+// Mock simples de autenticação (usuário: admin, senha: 1234)
+app.post('/api/v1/login', (req, res) => {
+  const { usuario, senha } = req.body;
+  if (usuario === 'admin' && senha === '1234') {
+    // Em produção, use JWT! Aqui é só para demo
+    res.json({ sucesso: true, token: 'admin-token-demo' });
+  } else {
+    res.status(401).json({ sucesso: false, erro: 'Usuário ou senha inválidos' });
+  }
+});
+
+// Middleware simples para proteger rotas admin
+function autenticaAdmin(req, res, next) {
+  const token = req.headers['authorization'];
+  if (token === 'Bearer admin-token-demo') return next();
+  res.status(401).json({ sucesso: false, erro: 'Não autorizado' });
+}
+
+// Exemplo de rota protegida (pode ser expandida para dados do dashboard)
+router.get('/admin/dados', autenticaAdmin, (req, res) => {
+  res.json({ sucesso: true, mensagem: 'Acesso autorizado ao dashboard!' });
+});
+
+// Rota para listar todos os rastreamentos (protegida)
+router.get('/rastreamentos', autenticaAdmin, (req, res) => {
+  db.all('SELECT * FROM rastreamentos ORDER BY atualizado_em DESC', (err, rows) => {
+    if (err) {
+      return res.status(500).json({ sucesso: false, erro: 'Erro ao buscar pedidos' });
+    }
+    res.json({ sucesso: true, pedidos: rows });
+  });
+});
+
+// Substituir proxy dos Correios por resposta mockada (sempre retorna opções de frete)
+router.post('/correios/simula', (req, res) => {
+  // Simula resposta de frete
+  res.json([
+    { servico: 'PAC', valor: 22.90, prazo: 7, origem: 'Origem Simulada', destino: 'Destino Simulado' },
+    { servico: 'SEDEX', valor: 39.90, prazo: 3, origem: 'Origem Simulada', destino: 'Destino Simulado' }
+  ]);
+});
+
 // Rota de teste
 router.get('/', (req, res) => {
   res.json({ sucesso: true, mensagem: 'API de frete está funcionando!' });
@@ -320,4 +393,4 @@ app.listen(port, () => {
  *       properties:
  *         status:
  *           type: string
- */ 
+ */

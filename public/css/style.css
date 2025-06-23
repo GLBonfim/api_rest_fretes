@@ -1,0 +1,199 @@
+/* Navegação moderna */
+.nav {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  background: #1976d2;
+  padding: 18px 0 10px 0;
+  margin-bottom: 32px;
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10);
+}
+.nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.1rem;
+  padding: 8px 18px;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+}
+.nav a.active, .nav a:hover {
+  background: #fff;
+  color: #1976d2;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: linear-gradient(120deg, #1976d2 0%, #64b5f6 100%);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  color: #222;
+}
+.container {
+  max-width: 500px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(25, 118, 210, 0.12);
+  padding: 32px 24px 24px 24px;
+}
+h1 {
+  color: #1976d2;
+  text-align: center;
+  margin-bottom: 18px;
+}
+form {
+  margin-bottom: 24px;
+  background: #f5faff;
+  border-radius: 8px;
+  padding: 16px 20px;
+  box-shadow: 0 1px 4px rgba(25, 118, 210, 0.06);
+}
+label {
+  display: block;
+  margin-top: 12px;
+  font-weight: 500;
+}
+input, select {
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 4px;
+  border: 1px solid #b3c6e0;
+  border-radius: 4px;
+  font-size: 1rem;
+  background: #fafdff;
+}
+button {
+  margin-top: 16px;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+button:hover {
+  background: #1565c0;
+}
+.result, .error {
+  margin-top: 12px;
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+.result {
+  background: #e3f2fd;
+  color: #1976d2;
+  border: 1px solid #90caf9;
+}
+.error {
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  color: #fff;
+  font-size: 0.95rem;
+  opacity: 0.8;
+}
+.dimensoes-row {
+  display: flex;
+  gap: 8px;
+}
+.dimensoes-row input {
+  flex: 1;
+}
+/* Dashboard container e tabela mais largas para melhor visualização dos pedidos */
+#dashboardBox.container {
+  max-width: 950px;
+  padding: 32px 18px 24px 18px;
+}
+#dashboardBox .table {
+  width: 100%;
+  min-width: 800px;
+  margin: 0 auto 24px auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(25, 118, 210, 0.08);
+  table-layout: auto;
+}
+#dashboardBox .table th, #dashboardBox .table td {
+  padding: 14px 18px;
+  font-size: 1.05rem;
+  vertical-align: middle;
+  min-width: 120px;
+}
+#dashboardBox .table th {
+  background: #1976d2;
+  color: #fff;
+  font-weight: 600;
+}
+#dashboardBox .table tr:nth-child(even) { background: #f5faff; }
+#dashboardBox .table tr:nth-child(odd) { background: #fff; }
+#dashboardBox .status {
+  font-weight: bold;
+  color: #1976d2;
+  border-radius: 4px;
+  padding: 4px 10px;
+  background: #e3f2fd;
+  display: inline-block;
+  min-width: 110px;
+  text-align: center;
+}
+#dashboardBox .btn-excluir-pedido {
+  background: #c62828;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 0.95rem;
+  margin-left: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#dashboardBox .btn-excluir-pedido:hover {
+  background: #b71c1c;
+}
+#dashboardBox .pedido-detalhe-row td {
+  background: #f5faff !important;
+  color: #1976d2;
+  border-top: 1px solid #e3f2fd;
+  font-size: 1.05rem;
+  padding: 18px 24px;
+}
+#dashboardBox .botoes-pedido {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+@media (max-width: 1000px) {
+  #dashboardBox.container {
+    max-width: 99vw;
+    padding: 8px 2vw;
+  }
+  #dashboardBox .table {
+    min-width: 0;
+    font-size: 0.95rem;
+  }
+  #dashboardBox .table th, #dashboardBox .table td {
+    padding: 8px 4px;
+  }
+}
+@media (max-width: 900px) {
+  #dashboardBox.container { max-width: 99vw; padding: 8px 2vw; }
+  #dashboardBox .table { min-width: 0; font-size: 0.95rem; }
+  #dashboardBox .table th, #dashboardBox .table td { padding: 8px 4px; }
+}
+@media (max-width: 600px) {
+  .container { padding: 12px 4px; }
+  h1 { font-size: 1.5rem; }
+  .nav { flex-direction: column; gap: 8px; }
+  #dashboardBox.container { padding: 12px 4px; }
+  #dashboardBox .table th, #dashboardBox .table td { padding: 8px 4px; }
+}

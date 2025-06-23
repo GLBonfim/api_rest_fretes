@@ -1,6 +1,6 @@
-# Sistema de Frete Magalu
+# Magalu Fretes - API e Dashboard de Teste
 
-API robusta para cálculo de frete e rastreamento de pedidos, pronta para integração com a plataforma Magazine Luiza (Magalu).
+API robusta para cálculo de frete e rastreamento de pedidos, pronta para integração com a plataforma.
 
 ---
 
@@ -27,7 +27,7 @@ API robusta para cálculo de frete e rastreamento de pedidos, pronta para integr
 
 ```bash
 # Clone o repositório
-$ git clone https://github.com/GLBonfim/seu-repo-aqui.git
+$ git clone https://github.com/GLBonfim/api_rest_fretes.git
 $ cd testes
 
 # Instale as dependências
@@ -79,4 +79,32 @@ Veja exemplos de uso na documentação Swagger.
 ## 📫 Contato
 - [GitHub](https://github.com/GLBonfim)
 - [LinkedIn](https://linkedin.com/in/glbonfim)
-- [Instagram](https://instagram.com/onloreto13) 
+- [Instagram](https://instagram.com/onloreto13)
+
+---
+
+## Objetivo
+
+Este projeto tem como objetivo principal **testar e demonstrar uma API REST de fretes** (Node.js/Express + SQLite) integrada a um frontend moderno (HTML/CSS/JS). O sistema simula o cálculo de frete, rastreamento de pedidos e oferece um dashboard administrativo para gestão dos pedidos.
+
+## Funcionalidades
+- Simulação de cálculo de frete (mock)
+- Criação automática de rastreamento após pagamento
+- Consulta de rastreamento por código/ID
+- Dashboard administrativo protegido por login
+- Atualização e exclusão de pedidos diretamente pelo dashboard
+- Visual moderno, responsivo e fácil de usar
+
+## Como usar
+1. Instale as dependências com `npm install`
+2. Inicie o backend com `node index.js`
+3. Acesse `index.html` pelo navegador para usar o frontend
+4. Use o dashboard para gerenciar pedidos (login: admin / senha: 1234)
+
+## Observações
+- O fluxo de criação de pedidos/rastreamentos é totalmente automatizado após o pagamento simulado.
+- O projeto é ideal para testes, demonstrações e aprendizado sobre APIs REST de frete.
+
+---
+
+Desenvolvido para fins de teste e demonstração.

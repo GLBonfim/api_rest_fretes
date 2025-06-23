@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Magalu Fretes - Consultar Rastreamento</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html">Início</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="frete.html">Calcular Frete</a>
+    <a class="active" href="consultar.html">Consultar Rastreamento</a>
+  </nav>
+  <div class="container">
+    <h1>Consultar Rastreamento</h1>
+    <form id="consultaForm">
+      <label>Código de Rastreamento</label>
+      <input type="text" name="codigo" required placeholder="Ex: MAGXXXXXXXXX">
+      <button type="submit">Consultar</button>
+      <div id="consultaResult"></div>
+    </form>
+  </div>
+  <div class="footer">
+    &copy; 2025 Magalu Fretes
+  </div>
+  <script src="js/consultar.js"></script>
+</body>
+</html>

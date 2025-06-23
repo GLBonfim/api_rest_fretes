@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Magalu Fretes - Calcular Frete</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html">Início</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a class="active" href="frete.html">Calcular Frete</a>
+    <a href="consultar.html">Consultar Rastreamento</a>
+  </nav>
+  <div class="container">
+    <h1>Calcular Frete</h1>
+    <form id="freteForm">
+      <label>Origem (CEP)</label>
+      <input type="text" name="origem" required placeholder="Ex: 01001-000">
+      <label>Destino (CEP)</label>
+      <input type="text" name="destino" required placeholder="Ex: 50010-000">
+      <label>Peso (kg)</label>
+      <input type="number" name="peso" step="0.01" required>
+      <label>Dimensões (cm)</label>
+      <div class="dimensoes-row">
+        <input type="number" name="altura" placeholder="Altura" required>
+        <input type="number" name="largura" placeholder="Largura" required>
+        <input type="number" name="comprimento" placeholder="Comprimento" required>
+      </div>
+      <button type="submit">Calcular</button>
+      <div id="freteResult"></div>
+    </form>
+    <div id="correiosResult"></div>
+  </div>
+  <div class="footer">
+    &copy; 2025 Magalu Fretes
+  </div>
+  <script src="js/frete.js"></script>
+</body>
+</html>

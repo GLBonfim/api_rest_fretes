@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Funcionário - Magalu Fretes</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 24px;
+      background: #fafdff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(25, 118, 210, 0.08);
+    }
+    .table th, .table td {
+      border: none;
+      padding: 12px 14px;
+      text-align: left;
+    }
+    .table th {
+      background: #1976d2;
+      color: #fff;
+      font-weight: 600;
+      font-size: 1.05rem;
+    }
+    .table tr:nth-child(even) {
+      background: #e3f2fd;
+    }
+    .table tr:nth-child(odd) {
+      background: #fff;
+    }
+    .status {
+      font-weight: bold;
+      color: #1976d2;
+      border-radius: 4px;
+      padding: 4px 10px;
+      background: #e3f2fd;
+      display: inline-block;
+    }
+    .update-form {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin: 0;
+    }
+    .update-form select {
+      padding: 4px 8px;
+      font-size: 1rem;
+      border-radius: 4px;
+      border: 1px solid #b3c6e0;
+      background: #fafdff;
+    }
+    .update-form button {
+      padding: 4px 12px;
+      font-size: 0.95rem;
+      background: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .update-form button:hover {
+      background: #1565c0;
+    }
+    .logout-btn {
+      margin-top: 24px;
+      background: #c62828;
+      color: #fff;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+      float: right;
+    }
+    .logout-btn:hover {
+      background: #b71c1c;
+    }
+    .dashboard-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .dashboard-title h1 {
+      margin: 0;
+      color: #1976d2;
+      font-size: 2rem;
+    }
+    .filtros {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .filtros label {
+      font-weight: 500;
+      margin-right: 4px;
+    }
+    .filtros select, .filtros input[type="text"] {
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid #b3c6e0;
+      font-size: 1rem;
+      background: #fafdff;
+    }
+    @media (max-width: 700px) {
+      .table th, .table td { font-size: 0.95rem; padding: 8px 4px; }
+      .dashboard-title h1 { font-size: 1.2rem; }
+      .filtros { flex-direction: column; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html">Início</a>
+    <a class="active" href="dashboard.html">Dashboard</a>
+    <a href="frete.html">Calcular Frete</a>
+    <a href="consultar.html">Consultar Rastreamento</a>
+  </nav>
+  <div class="container" id="loginBox">
+    <h1>Login do Administrador</h1>
+    <form id="loginForm">
+      <label>Usuário</label>
+      <input type="text" name="usuario" required placeholder="admin">
+      <label>Senha</label>
+      <input type="password" name="senha" required placeholder="1234">
+      <button type="submit">Entrar</button>
+      <div id="loginResult"></div>
+    </form>
+  </div>
+  <div class="container" id="dashboardBox" style="display:none;">
+    <div class="dashboard-title">
+      <h1>Pedidos/Rastreamentos</h1>
+      <button id="logoutBtn" class="logout-btn">Sair</button>
+    </div>
+    <div class="filtros">
+      <label for="filtroStatus">Status:</label>
+      <select id="filtroStatus">
+        <option value="">Todos</option>
+        <option value="Em separação">Em separação</option>
+        <option value="Em transporte">Em transporte</option>
+        <option value="Saiu para entrega">Saiu para entrega</option>
+        <option value="Entregue">Entregue</option>
+        <option value="Cancelado">Cancelado</option>
+      </select>
+      <label for="busca">Buscar:</label>
+      <input type="text" id="busca" placeholder="Código ou ID Pedido...">
+    </div>
+    <table class="table" id="pedidosTable">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>ID Pedido</th>
+          <th>Status</th>
+          <th>Atualizado em</th>
+          <th>Atualizar Status</th>
+        </tr>
+      </thead>
+      <tbody id="pedidosBody">
+        <tr><td colspan="5" style="text-align:center;">Carregando...</td></tr>
+      </tbody>
+    </table>
+    <div id="dashboardMsg"></div>
+  </div>
+  <div class="footer">
+    &copy; 2025 Magalu Fretes - Dashboard Funcionário
+  </div>
+  <script>
+    const API = 'http://localhost:3000/api/v1';
+    const loginBox = document.getElementById('loginBox');
+    const dashboardBox = document.getElementById('dashboardBox');
+    const pedidosBody = document.getElementById('pedidosBody');
+    const dashboardMsg = document.getElementById('dashboardMsg');
+    const filtroStatus = document.getElementById('filtroStatus');
+    const busca = document.getElementById('busca');
+    const token = localStorage.getItem('adminToken');
+    const statusOptions = [
+      'Em separação',
+      'Em transporte',
+      'Saiu para entrega',
+      'Entregue',
+      'Cancelado'
+    ];
+    let pedidosOriginais = [];
+    if (token) showDashboard();
+    function showDashboard() {
+      loginBox.style.display = 'none';
+      dashboardBox.style.display = '';
+      loadPedidos();
+    }
+    function showLogin() {
+      loginBox.style.display = '';
+      dashboardBox.style.display = 'none';
+      localStorage.removeItem('adminToken');
+    }
+    document.getElementById('loginForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const data = {
+        usuario: this.usuario.value,
+        senha: this.senha.value
+      };
+      const res = await fetch(`${API}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const out = document.getElementById('loginResult');
+      const json = await res.json();
+      if (json.sucesso) {
+        localStorage.setItem('adminToken', 'admin-token-demo');
+        out.className = 'result';
+        out.textContent = 'Login realizado!';
+        showDashboard();
+      } else {
+        out.className = 'error';
+        out.textContent = json.erro || 'Erro ao autenticar.';
+      }
+    };
+    document.getElementById('logoutBtn').onclick = function() {
+      showLogin();
+    };
+    async function loadPedidos() {
+      pedidosBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Carregando...</td></tr>';
+      dashboardMsg.textContent = '';
+      try {
+        const res = await fetch(`${API}/rastreamentos`, {
+          headers: { 'Authorization': 'Bearer ' + localStorage.getItem('adminToken') }
+        });
+        const json = await res.json();
+        if (json.sucesso && json.pedidos.length > 0) {
+          pedidosOriginais = json.pedidos;
+          renderPedidos();
+        } else {
+          pedidosBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Nenhum pedido encontrado.</td></tr>';
+        }
+      } catch (err) {
+        if (err && err.status === 401) {
+          pedidosBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#c62828;">Acesso não autorizado. Faça login novamente.</td></tr>';
+          localStorage.removeItem('adminToken');
+        } else {
+          pedidosBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Erro ao carregar pedidos.</td></tr>';
+        }
+      }
+    }
+    function renderPedidos() {
+      let pedidos = pedidosOriginais;
+      const status = filtroStatus.value;
+      const termo = busca.value.trim().toLowerCase();
+      if (status) {
+        pedidos = pedidos.filter(p => p.status === status);
+      }
+      if (termo) {
+        pedidos = pedidos.filter(p =>
+          p.codigo.toLowerCase().includes(termo) ||
+          p.pedido_id.toLowerCase().includes(termo)
+        );
+      }
+      if (pedidos.length === 0) {
+        pedidosBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Nenhum pedido encontrado.</td></tr>';
+        return;
+      }
+      pedidosBody.innerHTML = '';
+      pedidos.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><a href="#" class="pedido-info-link" data-codigo="${p.codigo}">${p.codigo}</a></td>
+          <td><a href="#" class="pedido-info-link" data-codigo="${p.codigo}">${p.pedido_id}</a></td>
+          <td class="status">${p.status}</td>
+          <td>${p.atualizado_em}</td>
+          <td></td>
+        `;
+        // Linha de detalhes oculta com botões alinhados
+        const trDetalhe = document.createElement('tr');
+        trDetalhe.className = 'pedido-detalhe-row';
+        trDetalhe.style.display = 'none';
+        trDetalhe.innerHTML = `<td colspan="5" style="background:#f5faff; border-top:1px solid #e3f2fd; padding:18px 24px; color:#1976d2; font-size:1.05rem;">
+          <b>Informações do Pedido</b><br>
+          Código: ${p.codigo}<br>
+          ID Pedido: ${p.pedido_id}<br>
+          Status: ${p.status}<br>
+          Atualizado em: ${p.atualizado_em}
+          <div class="botoes-pedido" style="display:flex;gap:12px;margin-top:16px;">
+            <form class="update-form" data-codigo="${p.codigo}" style="margin:0;display:inline-flex;align-items:center;gap:8px;">
+              <select name="status" required>
+                ${statusOptions.map(opt => `<option value="${opt}" ${opt === p.status ? 'selected' : ''}>${opt}</option>`).join('')}
+              </select>
+              <button type="submit">Atualizar</button>
+            </form>
+            <button class="btn-excluir-pedido" data-codigo="${p.codigo}">Excluir</button>
+          </div>
+        </td>`;
+        pedidosBody.appendChild(tr);
+        pedidosBody.appendChild(trDetalhe);
+      });
+      // Evento para mostrar info do pedido
+      document.querySelectorAll('.pedido-info-link').forEach(link => {
+        link.onclick = function(e) {
+          e.preventDefault();
+          const codigo = this.getAttribute('data-codigo');
+          // Esconde todos os detalhes
+          document.querySelectorAll('.pedido-detalhe-row').forEach(row => row.style.display = 'none');
+          // Mostra o detalhe da linha clicada
+          const allRows = Array.from(pedidosBody.querySelectorAll('tr'));
+          const idx = allRows.findIndex(row => row.querySelector(`[data-codigo='${codigo}']`));
+          if (idx !== -1 && allRows[idx+1] && allRows[idx+1].classList.contains('pedido-detalhe-row')) {
+            allRows[idx+1].style.display = allRows[idx+1].style.display === 'none' ? '' : 'none';
+          }
+        };
+      });
+      // Evento para excluir pedido
+      document.querySelectorAll('.btn-excluir-pedido').forEach(btn => {
+        btn.onclick = async function(e) {
+          e.preventDefault();
+          if (!confirm('Tem certeza que deseja excluir este pedido?')) return;
+          const codigo = this.getAttribute('data-codigo');
+          const res = await fetch(`${API}/rastreamento/${codigo}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('adminToken') }
+          });
+          const json = await res.json();
+          if (json.sucesso) {
+            dashboardMsg.className = 'result';
+            dashboardMsg.textContent = 'Pedido excluído com sucesso!';
+            loadPedidos();
+          } else {
+            dashboardMsg.className = 'error';
+            dashboardMsg.textContent = json.erro || 'Erro ao excluir pedido.';
+          }
+        };
+      });
+      // Evento para atualizar status dentro do detalhe
+      document.querySelectorAll('.update-form').forEach(form => {
+        form.onsubmit = async function(e) {
+          e.preventDefault();
+          const codigo = this.getAttribute('data-codigo');
+          const status = this.status.value;
+          const res = await fetch(`${API}/rastreamento/${codigo}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status })
+          });
+          const json = await res.json();
+          if (json.sucesso) {
+            dashboardMsg.className = 'result';
+            dashboardMsg.textContent = `Status do pedido ${codigo} atualizado para: ${status}`;
+            loadPedidos();
+          } else {
+            dashboardMsg.className = 'error';
+            dashboardMsg.textContent = json.erro || 'Erro ao atualizar status.';
+          }
+        };
+      });
+    }
+    filtroStatus.onchange = renderPedidos;
+    busca.oninput = renderPedidos;
+  </script>
+</body>
+</html>
